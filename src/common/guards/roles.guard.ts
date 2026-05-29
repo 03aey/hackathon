@@ -14,13 +14,11 @@ export class RolesGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    // Fetch roles metadata from handler first, then controller
     const requiredRoles = this.reflector.getAllAndOverride<string[]>('roles', [
       context.getHandler(),
       context.getClass(),
     ]);
 
-    // If no roles specified, allow access
     if (!requiredRoles || requiredRoles.length === 0) {
       return true;
     }
