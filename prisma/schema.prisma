@@ -9,19 +9,30 @@ datasource db {
 }
 
 model User {
-  id            String    @id
+  id            String   @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean  @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  role          String    @default("PARTICIPANT")
-  sessions      Session[]
-  accounts      Account[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  role          UserRole @default(PARTICIPANT)
+
+  sessions Session[]
+  accounts Account[]
+
+  hackathons            Hackathon[]
+  hackathonParticipants HackathonParticipant[]
 
   @@unique([email])
   @@map("user")
+}
+
+enum UserRole {
+  PARTICIPANT
+  ADMIN
+
+  @@map("user_role")
 }
 
 model Session {
@@ -70,4 +81,34 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Hackathon {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  startsAt    DateTime
+  endsAt      DateTime
+  isActive    Boolean  @default(false)
+
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+  authorId     String
+  author       User                   @relation(fields: [authorId], references: [id])
+  participants HackathonParticipant[]
+
+  @@map("hackathon")
+}
+
+model HackathonParticipant {
+  id          String   @id @default(cuid())
+  hackathonId String   @map("hackathon_id")
+  userId      String   @map("user_id")
+  joinedAt    DateTime @default(now()) @map("joined_at")
+
+  hackathon Hackathon @relation(fields: [hackathonId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([hackathonId, userId])
+  @@map("hackathon_participant")
 }
