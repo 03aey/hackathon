@@ -6,6 +6,9 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { PrismaModule } from './database/prisma.module';
+import { HackathonService } from './hackathon/hackathon.service';
+import { HackathonController } from './hackathon/hackathon.controller';
+import { HackathonModule } from './hackathon/hackathon.module';
 
 @Module({
   imports: [
@@ -13,8 +16,9 @@ import { PrismaModule } from './database/prisma.module';
     AuthModule.forRoot({ auth }),
     PrismaModule,
     UserModule,
+    HackathonModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, HackathonController],
+  providers: [AppService, HackathonService],
 })
 export class AppModule {}
